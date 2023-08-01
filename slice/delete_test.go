@@ -1,36 +1,56 @@
 package slice
 
 import (
-	"reflect"
+	"github.com/stretchr/testify/assert"
 	"testing"
 )
 
 func TestDeleteAt(t *testing.T) {
 
-	tests := []struct {
-		name    string
-		s       []int
-		idx     int
-		want    []int
-		wantErr bool
+	testCases := []struct {
+		name      string
+		slice     []int
+		index     int
+		wantSlice []int
+		wantVal   int
+		wantErr   error
 	}{
 		{
-			name: "index 0",
-			s:    []int{1, 2, 3},
-			idx:  0,
-			want: []int{2, 3},
+			name:    "nil",
+			slice:   nil,
+			wantErr: ErrIndexOutOfRange,
+		},
+		{
+			name:      "index 0",
+			slice:     []int{1, 2, 3},
+			index:     0,
+			wantVal:   1,
+			wantSlice: []int{2, 3},
+		},
+		{
+			name:    "boundary",
+			index:   3,
+			slice:   []int{1, 2, 3},
+			wantErr: ErrIndexOutOfRange,
+		},
+		{
+			name:      "index last",
+			slice:     []int{255, 369, 581, 732, 693},
+			index:     4,
+			wantVal:   693,
+			wantSlice: []int{255, 369, 581, 732},
 		},
 	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			got, err := DeleteAt(tt.s, tt.idx)
-			if (err != nil) != tt.wantErr {
-				t.Errorf("DeleteAt() error = %v, wantErr %v", err, tt.wantErr)
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			res, val, err := Delete(tc.slice, tc.index)
+			assert.Equal(t, tc.wantErr, err)
+			if err != nil {
 				return
 			}
-			if !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("DeleteAt() got = %v, want %v", got, tt.want)
-			}
+
+			assert.Equal(t, tc.wantSlice, res)
+			assert.Equal(t, tc.wantVal, val)
 		})
 	}
 }

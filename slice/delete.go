@@ -1,23 +1,21 @@
 package slice
 
-import "errors"
-
-var ErrIndexOutOfRange = errors.New("下标超出范围")
-
-// DeleteAt 删除指定位置的元素
+// Delete 删除指定位置的元素
 // 如果下标不是合法的下标，返回 ErrIndexOutOfRange
-func DeleteAt(s []int, idx int) ([]int, error) {
-	length := len(s)
-	if idx < 0 || idx >= length {
-		return nil, ErrIndexOutOfRange
+func Delete[T any](src []T, index int) ([]T, T, error) {
+	length := len(src)
+	if index < 0 || index >= length {
+		var zero T
+		return nil, zero, ErrIndexOutOfRange
 	}
 	j := 0
-	for i, v := range s {
-		if i != idx {
-			s[j] = v
+	res := src[index]
+	for i, v := range src {
+		if i != index {
+			src[j] = v
 			j++
 		}
 	}
-	s = s[:j]
-	return s, nil
+	src = src[:j]
+	return src, res, nil
 }
