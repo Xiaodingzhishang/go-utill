@@ -1,21 +1,27 @@
 package slice
 
-// Delete 删除指定位置的元素
-// 如果下标不是合法的下标，返回 ErrIndexOutOfRange
-func Delete[T any](src []T, index int) ([]T, T, error) {
-	length := len(src)
-	if index < 0 || index >= length {
-		var zero T
-		return nil, zero, ErrIndexOutOfRange
-	}
-	j := 0
-	res := src[index]
-	for i, v := range src {
-		if i != index {
-			src[j] = v
-			j++
+import "github.com/Xiaodingzhishang/go-utill/internal/slice"
+
+// Delete 删除 index 处的元素
+func Detele[Src any](src []Src, index int) ([]Src, error) {
+	res, _, err := slice.Delete[Src](src, index)
+	return res, err
+}
+
+// FilterDelete 删除符合条件的元素
+// 考虑到性能问题，所有操作都会在原切片上进行
+// 被删除元素之后的元素会往前移动，有且只会移动一次
+func FilterDelete[Src any](src []Src, m func(idx int, src Src) bool) []Src {
+	// 记录被删除的元素位置，也称空缺的位置
+	emtyPos := 0
+	for idx := range src {
+		// 判断是否满足删除的条件
+		if m(idx, src[idx]) {
+			continue
 		}
+		// 移动元素
+		src[emtyPos] = src[idx]
+		emtyPos++
 	}
-	src = src[:j]
-	return src, res, nil
+	return src[:emtyPos]
 }

@@ -1,56 +1,40 @@
 package slice
 
 import (
+	"github.com/Xiaodingzhishang/go-utill/internal/slice"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
 
-func TestDeleteAt(t *testing.T) {
-
+func TestDetele(t *testing.T) {
 	testCases := []struct {
 		name      string
 		slice     []int
 		index     int
 		wantSlice []int
-		wantVal   int
 		wantErr   error
 	}{
 		{
-			name:    "nil",
-			slice:   nil,
-			wantErr: ErrIndexOutOfRange,
-		},
-		{
 			name:      "index 0",
-			slice:     []int{1, 2, 3},
+			slice:     []int{123, 100},
 			index:     0,
-			wantVal:   1,
-			wantSlice: []int{2, 3},
+			wantSlice: []int{100},
 		},
 		{
-			name:    "boundary",
-			index:   3,
-			slice:   []int{1, 2, 3},
-			wantErr: ErrIndexOutOfRange,
-		},
-		{
-			name:      "index last",
-			slice:     []int{255, 369, 581, 732, 693},
-			index:     4,
-			wantVal:   693,
-			wantSlice: []int{255, 369, 581, 732},
+			name:    "index -1",
+			slice:   []int{123, 100},
+			index:   -1,
+			wantErr: slice.ErrIndexOutOfRange,
 		},
 	}
-	for _, tc := range testCases {
-		t.Run(tc.name, func(t *testing.T) {
-			res, val, err := Delete(tc.slice, tc.index)
-			assert.Equal(t, tc.wantErr, err)
+	for _, ts := range testCases {
+		t.Run(ts.name, func(t *testing.T) {
+			res, err := Detele(ts.slice, ts.index)
+			assert.Equal(t, ts.wantErr, err)
 			if err != nil {
 				return
 			}
-
-			assert.Equal(t, tc.wantSlice, res)
-			assert.Equal(t, tc.wantVal, val)
+			assert.Equal(t, ts.wantSlice, res)
 		})
 	}
 }
